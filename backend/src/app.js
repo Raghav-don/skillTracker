@@ -2,6 +2,7 @@ require('dotenv').config(); //configuring dotenv
 const express=require('express');
 const mongoose=require('mongoose');
 const cors=require('cors');
+const {router:authRouter}=require('./routes/auth');
 
 const app=express();
 
@@ -18,6 +19,9 @@ mongoose.connect(process.env.MONGO_URI,{
     useUnifiedTopology:true
 }).then(console.log("Mongodb successfully connected"))
    .catch(err=>console.log(err));
+
+
+app.use('api/auth',authRouter);
 
   const PORT=process.env.PORT || 5005; 
   app.listen(PORT,()=>console.log(`Server is running on Port: ${PORT}`))
