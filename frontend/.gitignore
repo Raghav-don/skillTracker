@@ -1,0 +1,9 @@
+# Ignore node_modules globally
+node_modules/
+
+# Ignore build artifacts
+dist/
+build/
+
+# Logs
+*.log
