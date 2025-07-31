@@ -1,4 +1,5 @@
 import { Bar } from "react-chartjs-2";
+import '/Users/hello/Desktop/Projects/skill-tracker/frontend/src/App.css';
 import {
   Chart as ChartJS,
   BarElement,

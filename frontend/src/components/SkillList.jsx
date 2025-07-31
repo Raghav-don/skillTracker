@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SkillPieChart from './SkillPieChart.jsx';
 import SkillBarChart from './SkillBarChart.jsx';
+import '/Users/hello/Desktop/Projects/skill-tracker/frontend/src/App.css';
 
 function SkillList() {
   const [skills, setSkills] = useState([]);

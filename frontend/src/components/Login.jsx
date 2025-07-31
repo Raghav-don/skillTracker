@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '/Users/hello/Desktop/Projects/skill-tracker/frontend/src/App.css';
 
 function Login({ onLogin }) {
     const [form, setForm] = useState({ email: '', password: '' });
@@ -28,7 +29,13 @@ function Login({ onLogin }) {
     return (
         <form onSubmit={handleSubmit}>
             <input name="email" placeholder="Email" onChange={handleChange} required />
+            <br></br>
+            <br></br>
+            <br></br>
             <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+            <br></br>
+            <br></br>
+
             <button type="submit">Login</button>
         </form>
     );
