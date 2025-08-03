@@ -1,79 +1,89 @@
-const express=require('express');
-const router=express.Router();
-const User=require("../models/User.js");
-const bcrypt=require('bcrypt');
-const jwt=require('jsonwebtoken');
+import express from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
-//registration route
-router.post('/register',async(req,res)=>{
-    const {username,email,password}=req.body;
-    try{
-        //check if user exists
-        let user=await User.findOne({email});
-        if(user) return res.status(400).json({msg:'User already registered'});
+const router = express.Router();
 
-        //Hash password
-        const hashedPassword=await bcrypt.hash(password,10);
+// Auth middleware
+export const authMiddleware = (req, res, next) => {
+  const token = req.header('x-auth-token');
+  if (!token) return res.status(401).json({ msg: 'No token provided' });
 
-        //save user
-        user=new User({username,email,password:hashedPassword});
-        await user.save();
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ msg: 'Invalid token' });
+  }
+};
 
-        res.status(201).json({msg:'Registration successful'});
-    
+// Register
+router.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
 
+  try {
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ msg: 'User already exists' });
 
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ username, email, password: hashed });
+    await user.save();
 
-    } catch(err){
-        res.status(500).json({msg:'Server error'});
-    }
+    res.status(201).json({ msg: 'Registration successful' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
 });
 
-//Login route
+// Login
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
 
-router.post('/login',async(req,res)=>{
-    const {email,password}=req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
-    try{
-        //find user
-        const user=await User.findOne({email});
-        if(!user) return res.status(400).json({msg:'Invalid credentials'});
-        
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
 
-        //compare passwords
-        const isMatch=await bcrypt.compare(password,user.password);
-        if(!isMatch) return res.status(400).json({msg:'Invalid credentials'});
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-        //Generate JWT
-        const token=jwt.sign(
-            {
-                id:user._id,username:user.username
-            },
-            process.env.JWT_SECRET,
-            {expiresIn:'1h'}
-        );
-        res.json({token,user:{id:user._id,username:user.username}});
-    
-    
-        
-    } catch(err){
-        res.status(500).json({msg:'Server error'});
-    }
-
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        idNumber: user.idNumber || '',
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Login error' });
+  }
 });
 
-//Middleware to protect routes
-function authMiddleware(req,res,next){
-    const token=req.header('x-auth-token');
-    if(!token) return res.status(401).json({msg:'No token,authorization denied'});
+// Update profile
+router.put('/profile', authMiddleware, async (req, res) => {
+  const { username, idNumber, role } = req.body;
 
-    try{
-        const decoded=jwt.verify(token,process.env.JWT_SECRET);
-        req.user=decoded;
-        next();
-    }catch{
-        res.status(401).json({msg:'Token is not valid'});
-    }
-}
+  try {
+    const updated = await User.findByIdAndUpdate(
+      req.user.id,
+      { username, idNumber, role },
+      { new: true }
+    ).select('-password');
 
-module.exports={router,authMiddleware};
+    res.json({ user: updated, msg: 'Profile updated successfully' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Profile update failed' });
+  }
+});
+
+export default router;

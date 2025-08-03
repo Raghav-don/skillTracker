@@ -1,49 +1,57 @@
-body{
-  background-image: url('https://cdn.pixabay.com/photo/2019/12/01/05/01/entrepreneur-4664726_1280.jpg');
-  color: aliceblue;
-
-  backdrop-filter: blur(12px); /* blur background behind it */
-  -webkit-backdrop-filter: blur(12px); /* for Safari */
-  padding: 20px;
-  border-radius: 10px;
-  background-size:cover;
-  
- 
-
-
- 
-  justify-content: center;
-  align-items:center;
-  height: 100vh;
+body {
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0;
+  background: #f1d7b7;
 }
 
-.Homepage{
- 
-  flex-direction:column;
+.Homepage {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgb(193, 199, 237);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  
+}
+
+form input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+form {
+ width:100%;
   justify-content: center;
   align-items: center;
-  display:flex;
-  margin-top: 1cm;
-
-}
-button{
-  justify-content: center;
-  margin-left:1.5cm;
-  align-items: center;
-  display:flex;
-  text-align: center;
-  padding:10px;
-  border-radius:10px;
-  width:5cm;
   
-
 }
-button:hover{
-  background-color: burlywood;
-}
-input{
-  padding:10px;
-  width:7cm;
-  border-radius:10px;
 
+form button {
+  background-color: #f59014;
+  color: rgb(12, 12, 12);
+  padding: 0.7rem 2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin-left:6cm;
+  margin-right:6cm;
+  
+}
+
+form button:hover {
+  background-color: #be7a04;
+  transition: 0.3s;
+}
+.pie-chart{
+  width:10cm;
+  align-items: center;
+  justify-content: center;
+  height:10cm;
+  margin-left:7cm;
+ 
 }

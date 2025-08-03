@@ -37,9 +37,13 @@ function SkillPieChart({ skills }) {
   };
 
   return (
-    <div>
-      <h3>Skill Distribution</h3>
+    <div> 
+    <h2>Skill chart</h2>
+    
+    <div className="pie-chart">
+      
       <Pie data={data} options={options} />
+    </div>
     </div>
   );
 }

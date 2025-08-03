@@ -59,7 +59,7 @@ function SkillBarChart({ skills }) {
 
   return (
     <div>
-      <h3>Progress Overview</h3>
+      <h2>Progress Overview</h2>
       <Bar data={data} options={options} />
     </div>
   );
