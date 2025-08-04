@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 function Profile({ user, setUser }) {
   const [form, setForm] = useState({
-    username: user.username,
-    idNumber: user.idNumber || '',
-    role: user.role || 'technician',
+    username: user?.username || '',
+    idNumber: user?.idNumber || '',
+    role: user?.role || 'technician',
   });
 
   const navigate = useNavigate();
@@ -26,20 +26,20 @@ function Profile({ user, setUser }) {
       const data = await res.json();
 
       if (res.ok) {
-        alert('Profile updated successfully');
-        setUser(data.user);             // ✅ in-memory update
-        navigate('/');                  // ✅ redirect to skill page
+        alert('✅ Profile updated successfully!');
+        setUser(data.user); // ✅ Update user in parent state
+        navigate('/'); // ✅ Go back to homepage
       } else {
-        alert(data.msg || 'Update failed');
+        alert(data.msg || data.error || 'Update failed');
       }
     } catch (err) {
       console.error('Error updating profile:', err);
-      alert('Something went wrong');
+      alert('Something went wrong: ' + err.message);
     }
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: '400px', margin: 'auto' }}>
       <h2>Edit Profile</h2>
       <form onSubmit={handleSubmit}>
         <label>Name:</label>
@@ -50,6 +50,7 @@ function Profile({ user, setUser }) {
           onChange={(e) => setForm({ ...form, username: e.target.value })}
           required
         />
+
         <label>ID Number:</label>
         <input
           type="text"
@@ -57,6 +58,7 @@ function Profile({ user, setUser }) {
           value={form.idNumber}
           onChange={(e) => setForm({ ...form, idNumber: e.target.value })}
         />
+
         <label>Role:</label>
         <select
           name="role"
@@ -64,9 +66,12 @@ function Profile({ user, setUser }) {
           onChange={(e) => setForm({ ...form, role: e.target.value })}
         >
           <option value="admin">Admin</option>
+          <option value="developer">Developer</option>
+          <option value="tester">Tester</option>
           <option value="technician">Technician</option>
         </select>
-        <br />
+
+        <br /><br />
         <button type="submit">Save</button>
       </form>
     </div>

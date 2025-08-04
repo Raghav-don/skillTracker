@@ -14,7 +14,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [skills, setSkills] = useState([]);
 
-  // Load user from localStorage
+  // Load user from localStorage on initial load
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -22,7 +22,7 @@ function App() {
     }
   }, []);
 
-  // Load skills on login
+  // Fetch skills once user is available
   useEffect(() => {
     if (user) fetchSkills();
   }, [user]);
@@ -37,15 +37,16 @@ function App() {
           'x-auth-token': token,
         },
       });
+
       if (res.ok) {
         const data = await res.json();
         setSkills(data);
       } else {
-        const error = await res.json();
-        console.warn('Fetch skills failed:', error.msg);
+        const err = await res.json();
+        console.warn('Fetch skills failed:', err.msg);
       }
     } catch (err) {
-      console.error('Skill fetch error:', err);
+      console.error('Error fetching skills:', err);
     }
   };
 
@@ -69,8 +70,6 @@ function App() {
         )}
 
         <Routes>
-
-          {/* Public Routes */}
           {!user ? (
             <>
               <Route
@@ -78,7 +77,10 @@ function App() {
                 element={
                   <>
                     <h2>Login</h2>
-                    <Login onLogin={setUser} />
+                    <Login onLogin={(loggedInUser) => {
+                      setUser(loggedInUser);
+                      localStorage.setItem('user', JSON.stringify(loggedInUser));
+                    }} />
                     <h2>Or Register</h2>
                     <Register />
                   </>
@@ -87,8 +89,6 @@ function App() {
               <Route path="*" element={<Navigate to="/" />} />
             </>
           ) : (
-
-            // Protected Routes
             <>
               <Route
                 path="/"
@@ -97,8 +97,6 @@ function App() {
                     <p>Welcome, <strong>{user.username}</strong>!</p>
                     <AddSkill onSkillAdded={fetchSkills} />
                     <SkillList skills={skills} onSkillDeleted={fetchSkills} />
-
-                    {/* Bar & Pie Charts */}
                     {skills.length > 0 && (
                       <>
                         <SkillBarChart skills={skills} />
@@ -108,16 +106,10 @@ function App() {
                   </>
                 }
               />
-
-              <Route
-                path="/profile"
-                element={<Profile user={user} />}
-              />
-
+              <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
               <Route path="*" element={<Navigate to="/" />} />
             </>
           )}
-
         </Routes>
       </div>
     </Router>
